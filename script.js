@@ -67,7 +67,7 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 });
 
-// Contact form handling
+// Contact form handling with Formspree
 const contactForm = document.getElementById('contactForm');
 if (contactForm) {
     contactForm.addEventListener('submit', function(e) {
@@ -91,9 +91,40 @@ if (contactForm) {
             return;
         }
         
-        // Simulate form submission
-        showNotification('Message sent successfully! I\'ll get back to you soon.', 'success');
-        this.reset();
+        // Submit to Formspree
+        const submitButton = this.querySelector('button[type="submit"]');
+        const originalButtonText = submitButton.textContent;
+        submitButton.textContent = 'Sending...';
+        submitButton.disabled = true;
+        
+        fetch(this.action, {
+            method: 'POST',
+            body: formData,
+            headers: {
+                'Accept': 'application/json'
+            }
+        })
+        .then(response => {
+            if (response.ok) {
+                showNotification('Message sent successfully! I\'ll get back to you soon.', 'success');
+                this.reset();
+            } else {
+                response.json().then(data => {
+                    if (Object.hasOwn(data, 'errors')) {
+                        showNotification(data.errors.map(error => error.message).join(', '), 'error');
+                    } else {
+                        showNotification('Oops! There was a problem submitting your form', 'error');
+                    }
+                });
+            }
+        })
+        .catch(error => {
+            showNotification('Oops! There was a problem submitting your form', 'error');
+        })
+        .finally(() => {
+            submitButton.textContent = originalButtonText;
+            submitButton.disabled = false;
+        });
     });
 }
 
