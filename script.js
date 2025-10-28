@@ -57,7 +57,7 @@ const observer = new IntersectionObserver((entries) => {
 
 // Observe elements for animation
 document.addEventListener('DOMContentLoaded', () => {
-    const animatedElements = document.querySelectorAll('.skill-category, .project-card, .about-content, .contact-content');
+    const animatedElements = document.querySelectorAll('.skill-category, .project-card, .about-content, .contact-content, .experience-item');
     
     animatedElements.forEach(el => {
         el.style.opacity = '0';
@@ -242,9 +242,10 @@ document.addEventListener('DOMContentLoaded', () => {
 const roles = ["Full Stack Developer", "Mobile App Developer", "AI Enthusiast"];
 let currentRoleIndex = 0;
 let roleElement;
+let typingComplete = false;
 
 function switchRole() {
-    if (!roleElement) return;
+    if (!roleElement || !typingComplete) return;
     
     // Fade out current text
     roleElement.style.opacity = '0';
@@ -260,11 +261,12 @@ function switchRole() {
 document.addEventListener('DOMContentLoaded', () => {
     roleElement = document.getElementById('dynamic-role');
     if (roleElement) {
-        // Start cycling after 2 seconds, then every 3 seconds
+        // Start cycling after typing animation completes (1s delay + ~1.6s typing time + 1s buffer)
         setTimeout(() => {
+            typingComplete = true;
             switchRole();
             setInterval(switchRole, 3000);
-        }, 2000);
+        }, 3600);
     }
 });
 
